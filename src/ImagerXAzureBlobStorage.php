@@ -1,18 +1,15 @@
 <?php
 /**
- * External storage driver for Imager X that integrates with Microsoft Azure blob
+ * External storage driver for Imager X that integrates with Microsoft Azure Blob Storage
  *
- * @link      https://paragonn.com/
- * @copyright Copyright (c) 2021 Shannon McMillan
+ * @link      https://lunar.be/
+ * @copyright Copyright (c) 2025 William Blommaert
  */
 
 namespace discoverlunar\ImagerXAzureBlobStorage;
 
-use Craft;
 use yii\base\Event;
 use craft\base\Plugin;
-use craft\services\Plugins;
-use craft\events\PluginEvent;
 use spacecatninja\imagerx\ImagerX;
 use spacecatninja\imagerx\events\RegisterExternalStoragesEvent;
 use discoverlunar\ImagerXAzureBlobStorage\ExternalStorage\AzureStorage;

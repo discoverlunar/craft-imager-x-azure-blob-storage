@@ -1,4 +1,4 @@
-# Imager X Storage Driver for Microsoft Azure blob
+# Imager X storage driver for Microsoft Azure Blob Storage
 
 This is an external storage driver for Imager X that uploads your Imager transforms to Microsoft Azure's blob storage.
 

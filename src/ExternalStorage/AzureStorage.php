@@ -1,24 +1,18 @@
 <?php
-/**
- * Digital Ocean Spaces external storage driver for Imager X
- *
- * @link      https://www.spacecat.ninja/
- * @copyright Copyright (c) 2020 André Elvan
- */
 
 namespace discoverlunar\ImagerXAzureBlobStorage\ExternalStorage;
 
 use Craft;
+use craft\helpers\App;
 use craft\helpers\FileHelper;
-use spacecatninja\imagerx\models\ConfigModel;
+use InvalidArgumentException;
+use League\Flysystem\FilesystemException;
 use spacecatninja\imagerx\services\ImagerService;
 use spacecatninja\imagerx\externalstorage\ImagerStorageInterface;
 use League\Flysystem\AzureBlobStorage\AzureBlobStorageAdapter;
 use League\Flysystem\Filesystem;
 use MicrosoftAzure\Storage\Blob\BlobRestProxy;
-
-use yii\web\Controller;
-use yii\web\UploadedFile;
+use Throwable;
 
 class AzureStorage implements ImagerStorageInterface
 {
@@ -29,47 +23,53 @@ class AzureStorage implements ImagerStorageInterface
      * @param array $settings
      * @return bool
      */
-    public static function upload(string $file, string $uri, bool $isFinal, array $settings)
+    public static function upload(string $file, string $uri, bool $isFinal, array $settings): bool
     {
-
-        /** @var ConfigModel $settings */
         $config = ImagerService::getConfig();
-
-        $connectionString = Craft::parseEnv($settings['connectionString']);
+        $connectionString = App::parseEnv($settings['connectionString']);
 
         try {
             $client = static::client($connectionString);
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             Craft::error('Invalid configuration of Azure Client: ' . $e->getMessage(), __METHOD__);
             return false;
         }
 
         if (isset($settings['folder']) && $settings['folder'] !== '') {
-            $uri = ltrim(FileHelper::normalizePath(Craft::parseEnv($settings['folder']) . '/' . $uri), '/');
+            $uri = ltrim(FileHelper::normalizePath(App::parseEnv($settings['folder']) . '/' . $uri), '/');
         }
 
-        // Always use forward slashes for Azure
         $uri = str_replace('\\', '/', $uri);
+        try {
+            $adapter = Craft::$container->get(AzureBlobStorageAdapter::class, [$client, App::parseEnv($settings['container'])]);
+        } catch (Throwable $e) {
+            Craft::error("Failed to initialize Azure Blob Storage adapter: {$e->getMessage()}");
+            return false;
+        }
 
-        $adapter = new AzureBlobStorageAdapter($client, Craft::parseEnv($settings['container']));
-        $filesystem = new Filesystem($adapter);
-        $stream = fopen($file, 'r+');
-        $filesystem->putStream($uri, $stream);
-        // $filesystem->updateStream($uri, $stream);
-        // fclose($stream);
+        try {
+            $filesystem = Craft::$container->get(Filesystem::class, [$adapter]);
+        } catch (Throwable $e) {
+            Craft::error("Failed to initialize Azure Blob Storage filesystem: {$e->getMessage()}");
+            return false;
+        }
 
-        /*$opts = $settings['requestHeaders'];
-        $cacheDuration = $isFinal ? $config->cacheDurationExternalStorage : $config->cacheDurationNonOptimized;
-        if (! isset($opts['Cache-Control'])) {
-            $opts['CacheControl'] = 'max-age=' . $cacheDuration . ', must-revalidate';
-        }*/
+        $stream = fopen($file, 'rb+');
 
-        return true;
+        try {
+            $filesystem->writeStream($uri, $stream);
+            return true;
+        } catch (FilesystemException $e) {
+            Craft::error("Failed to write stream to Azure Blob Storage: {$e->getMessage()}");
+            return false;
+        } finally {
+            if (is_resource($stream)) {
+                fclose($stream);
+            }
+        }
     }
 
     /**
-     * Get the Azure Blob Storage client.
-     *
      * @param string $connectionString Connection string to use
      * @return BlobRestProxy
      */
