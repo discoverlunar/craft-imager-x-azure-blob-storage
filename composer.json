@@ -21,6 +21,9 @@
 		"craftcms/cms": "^3.3.0|^4.0.0|^5.0.0",
 		"league/flysystem-azure-blob-storage": "^3.0.0"
 	},
+	"replace": {
+		"paragonn/craft-imager-x-azure-blob": "self.version"
+	},
 	"autoload": {
 		"psr-4": {
 			"discoverlunar\\ImagerXAzureBlobStorage\\": "src/"
