@@ -1,17 +1,17 @@
 # Imager X storage driver for Microsoft Azure Blob Storage
 
-This is an external storage driver for Imager X that uploads your Imager transforms to Microsoft Azure's blob storage.
+This is an external storage driver for Imager X that uploads your Imager X transforms to Microsoft Azure Blob Storage.
 
 ## Requirements
 
-This plugin requires Craft CMS 3.3.0 or later, and Imager X 3.0 or later. External storages are only available in the Pro edition of Imager.
+This plugin is compatible with Craft CMS 3, 4 and 5, and Imager X 3.0 or later. External storages are only available in the Pro edition of Imager X.
 
 ## Installation
 
 To install the plugin, follow these instructions:
 
-1. Install with composer via `composer require paragonn/craft-imager-x-azure-blob` from your project directory.
-2. Install the plugin in the Craft Control Panel under Settings > Plugins, or from the command line via `./craft install/plugin craft-imager-x-azure-blob`.
+1. Install with composer via `composer require discoverlunar/craft-imager-x-azure-blob-storage` from your project directory.
+2. Install the plugin in the Craft Control Panel under Settings > Plugins, or from the command line via `./craft install/plugin craft-imager-x-azure-blob-storage`.
 
 ## Configuration
 
@@ -20,12 +20,10 @@ Configure the storage driver by adding new key named `azure` to the `storagesCon
     'storageConfig' => [
         'azure' => [
             'endpoint' => '',
-            'accessKey' => '',
-            'secretAccessKey' => '',
-            'region' => '',
-            'bucket' => '',
+            'connectionString' => '',
+            'container' => '',
             'folder' => '',
-            'requestHeaders' => array(),
+            'requestHeaders' => [],
         ]
     ],
 
@@ -43,7 +41,7 @@ Here's an example config, note that the endpoint has to be a complete URL with s
             'connectionString' => 'MY_CONNECTION_STRING',
             'container' => 'MY_CONTAINER',
             'folder' => 'imager',
-            'requestHeaders' => array(),
+            'requestHeaders' => [],
         ]
     ],
 
@@ -52,4 +50,5 @@ Also remember to always empty your Imager transforms cache when adding or removi
 
 Price, license and support
 ---
-The plugin is released under the MIT license. It requires Imager X Pro, which is a commercial plugin [available in the Craft plugin store](https://plugins.craftcms.com/imager-x).
+This plugin continues the work done in [paragonn/craft-imager-x-azure-blob](https://github.com/paragonn/craft-imager-x-azure-blob), which wasn't updated to support Craft CMS 4 and later Craft CMS 5.
+As before, the plugin is released under the MIT license. It requires Imager X Pro, which is a commercial plugin [available in the Craft plugin store](https://plugins.craftcms.com/imager-x).
