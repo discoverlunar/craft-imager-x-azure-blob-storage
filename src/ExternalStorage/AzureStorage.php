@@ -6,7 +6,7 @@
  * @copyright Copyright (c) 2020 André Elvan
  */
 
-namespace paragonn\ImagerxAzureBlobStorage\externalstorage;
+namespace discoverlunar\ImagerXAzureBlobStorage\ExternalStorage;
 
 use Craft;
 use craft\helpers\FileHelper;
